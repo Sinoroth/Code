@@ -12,7 +12,8 @@ namespace Homework1ProducerConsumer
 
         public AssemblyLine(int totalObjects)
         {
-
+            totalNumberOfObjects = totalObjects;
+            currentNumberOfObjects = 0;
         }
 
         public void addOne()
