@@ -39,19 +39,10 @@ namespace Homework1ProducerConsumer
                     if (al.isEmpty() == true)
                     {
                         continue;
-                   //     mutex.WaitOne();
-                        flag = true;
                     }
 
                     al.consume();
 
-                    //Thread.Sleep(500);
-
-                    if (isMutexInUse())
-                    {
-                 //       mutex.ReleaseMutex();
-                    }
-                    //flag = false;
                 }
             }
         }
@@ -66,20 +57,10 @@ namespace Homework1ProducerConsumer
                     if (al.isThereRoomLeft() == false)
                     {
                         continue;
-                     //   mutex.WaitOne();
-                        flag = true;
                     }
 
 
                     al.addOne();
-
-                    //Thread.Sleep(500);
-
-                    if (isMutexInUse())
-                    {
-                      //  mutex.ReleaseMutex();
-                    }
-                    //flag = false;
                 }
 
             }
