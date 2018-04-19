@@ -1,87 +1,91 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace Homework1ProducerConsumer
+
+namespace Homework3Producator
 {
     class Assembly
     {
         private static AssemblyLine al;
-        
 
-        private static Mutex mutex = new Mutex(true,"Test");
+        public static object removeFromList = new object();
+        public static object addToList = new object();
 
-        private  static object lockForApplication = new object();
-
-        private static Object lockObject = new object();
-
-        private static bool flag = false;
-
-        private static bool isMutexInUse()
-        {
-            if(flag == true)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private static void consume()
-        {
-            while(true)
-                {
-                lock (lockObject)
-                {
-
-                    if (al.isEmpty() == true)
-                    {
-                        continue;
-                    }
-
-                    al.consume();
-
-                }
-            }
-        }
-
-        private static void produce()
-        {
-            while (true)
-            {
-                lock (lockObject)
-                {
-
-                    if (al.isThereRoomLeft() == false)
-                    {
-                        continue;
-                    }
-
-
-                    al.addOne();
-                }
-
-            }
-        }
 
         public Assembly()
         {
-            al = new AssemblyLine(5);
+            al = new AssemblyLine(10);
         }
 
-        public void run() {
-            Thread producer = new Thread(new ThreadStart(produce));
-            Thread consumer = new Thread(new ThreadStart(consume));
+        public static void consumer(int consumerNumber)
+        {
+            while (true)
+            {
+                lock (addToList)
+                {
 
-            producer.Start();
-            consumer.Start();
+                    if (al.isEmpty())
+                    {
+                        Monitor.Wait(addToList);
+                    }
 
+                   Thread.Sleep(1000);
 
+                    al.consume(consumerNumber);
 
-            producer.Join();
-            consumer.Join();
+                    Monitor.Pulse(addToList);
+                }
+            }
+        }
+
+        public static void producer(int producerNumber)
+        {
+            while (true)
+            {
+                lock (addToList)
+                {
+                    if (al.isThereRoomLeft() == false)
+                    {
+                        Monitor.Wait(addToList);
+                    }
+
+                    Thread.Sleep(1000);
+
+                    al.addOne(producerNumber);
+
+                    Monitor.Pulse(addToList);
+                }
+            }
+        }
+
+        public void run()
+        {
+            Thread[] threads = new Thread[10];
+
+            for (int i = 0; i < 5; ++i)
+            {
+                threads[i] = new Thread(() => producer(i + 1));
+
+            }
+
+            for (int i = 0; i < 5; ++i)
+            {
+                threads[i + 5] = new Thread(() => consumer(i + 1));
+            }
+
+            for (int i = 0; i < 10; ++i)
+            {
+                threads[i].Start();
+            }
+
+            for (int i = 0; i < 10; ++i)
+            {
+                threads[i].Join();
+            }
 
         }
 
@@ -95,15 +99,15 @@ namespace Homework1ProducerConsumer
                 currentNumberOfObjects = 0;
             }
 
-            public void addOne()
+            public void addOne(int producerN)
             {
                 currentNumberOfObjects++;
-                Console.WriteLine("Producer produced item " + currentNumberOfObjects);
+                Console.WriteLine("Producer " + producerN + " produced item " + currentNumberOfObjects);
             }
 
-            public void consume()
+            public void consume(int consumerN)
             {
-                Console.WriteLine("Consumer consumed item " + currentNumberOfObjects);
+                Console.WriteLine("Consumer " + consumerN + " consumed item " + currentNumberOfObjects);
                 currentNumberOfObjects--;
             }
 
@@ -120,6 +124,5 @@ namespace Homework1ProducerConsumer
 
 
         }
-
     }
 }
