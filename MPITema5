@@ -11,16 +11,10 @@
 
 using namespace std;
 
-int getSum(int lower, int upper,int rank);
-
-int numbers[SIZE];
-
 void main(int argc, char *argv[])
 {
 	int size, myrank,myNumber, leadProcess;
 	int source; 
-
-	int chunksize = SIZE / NRTASKS;
 
 	int tag = 1;
 
