@@ -1,0 +1,80 @@
+#include "stdafx.h"
+#include <iostream>
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <mpi.h>
+#include <time.h>
+#define  MASTER 0
+#define  NRTASKS 4
+#define  SIZE 40
+
+
+using namespace std;
+
+int getSum(int lower, int upper,int rank);
+
+int numbers[SIZE];
+
+void main(int argc, char *argv[])
+{
+	int size, myrank,myNumber, leadProcess;
+	int source; 
+
+	int chunksize = SIZE / NRTASKS;
+
+	int tag = 1;
+
+	MPI_Status status;
+	MPI_Init(&argc, &argv);
+	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
+	MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+	srand(time(NULL) + myrank);
+
+	myNumber = rand() % 100 + 1;
+
+	printf("Process %d has the number %d\n", myrank, myNumber);
+
+
+	if (myrank == MASTER)
+	{
+		int allTheNumbers[SIZE], numberFromProcess, max = myNumber, processID = 0;
+		allTheNumbers[0] = myNumber;
+		
+		for (int processIndex = 1; processIndex < NRTASKS; ++processIndex)
+		{
+			source = processIndex;
+			MPI_Recv(&numberFromProcess, 1, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+			allTheNumbers[processIndex] = numberFromProcess;
+
+			printf("Master received element %d from process %d\n", numberFromProcess, processIndex);
+		}
+		
+		for (int processIndex = 1; processIndex < NRTASKS; ++processIndex) {
+			if (allTheNumbers[processIndex] >= max) {
+				max = allTheNumbers[processIndex];
+				processID = processIndex;
+			}
+		}
+
+		leadProcess = processID;
+
+		for (int processIndex = 1; processIndex < NRTASKS; ++processIndex) {
+			source = processIndex;
+			MPI_Send(&leadProcess, 1, MPI_INT, processIndex, tag, MPI_COMM_WORLD);
+
+		}
+
+		printf("The lead process is process %d\n", leadProcess);
+	}
+	else if (myrank != MASTER){
+		source = MASTER;
+
+		MPI_Send(&myNumber,1, MPI_INT, MASTER, tag, MPI_COMM_WORLD);
+
+		MPI_Recv(&leadProcess, 1, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+	}
+	
+
+	MPI_Finalize();
+}
