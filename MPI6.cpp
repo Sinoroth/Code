@@ -65,14 +65,8 @@ void main(int argc, char *argv[])
 		MPI_Recv(&dst, NRTASKS*NRTASKS, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
 
 		rf(dst, myrank);
-
-		for (int line = 0; line < NRTASKS; ++line) {
-			for (int col = 0; col < NRTASKS; ++col) {
-				tempGrah[line][col] = dst[line][col];
-			}
-		}
-
-		MPI_Send(&tempGrah, NRTASKS*NRTASKS, MPI_INT, MASTER, tag, MPI_COMM_WORLD);
+		
+		MPI_Send(&dst, NRTASKS*NRTASKS, MPI_INT, MASTER, tag, MPI_COMM_WORLD);
 
 	}
 	
