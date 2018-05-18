@@ -33,7 +33,7 @@ int main()
 {
 	int numBlocks = 1;
 
-	dim3 threadsPerBlock(4, 4);
+	dim3 threadsPerBlock(NRTASKS, NRTASKS);
 
 	for (int k = 0; k < NRTASKS; k++)
 		MatAdd << <numBlocks, threadsPerBlock >> >(dst);
