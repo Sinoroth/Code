@@ -23,7 +23,10 @@ __global__ void MatAdd(int dst[NRTASKS][NRTASKS])
 	int i = threadIdx.x;
 	int j = threadIdx.y;
 
-	dst[i][j] = min(dst[i][j], dst[i][k] + ds[k][j]);
+	if (dst[i][k] + dst[k][j] < dst[i][j]) {
+		dst[i][j] = dst[i][k] + dst[k][j];
+	}
+
 }
 
 int main()
