@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+void main(){
+	char message[200],let;
+	int key;
+	printf("Enter your message that you want encryped: ");
+	gets(message);
+	printf("Enter key: ");
+	scanf("%d", &key);
+	for(int integer = 0; message[integer] != '\0'; ++integer){
+	    let = message[integer];
+	    if(let == ' '){
+	        message[integer] = let;
+	        continue;
+	    }
+		if(let >='a' && let <= 'z'){
+		    let += key;
+			if(let > 'z'){
+				let= let-'z'+'a'-1;
+			}
+		}
+		else if(let >= 'A' && let <= 'Z'){
+		    let += key;
+		    if(let > 'Z'){
+		        let= let -'Z'+'A'-1;
+		    }
+		}
+		
+		message[integer] = let;
+        }
+    printf("Encrypted message: %s", message);
+}
