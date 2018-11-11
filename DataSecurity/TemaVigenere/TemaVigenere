@@ -1,0 +1,39 @@
+#include<stdio.h>
+#include<string.h>
+ 
+int main(){
+    char msg[] = "Ana are mere", key[] = "TEST";
+    char newKey[200], enMsg[200], deMsg[200];
+
+    int len, keyLen;
+     
+    len = strlen(msg);
+    keyLen = strlen(key);
+
+    for(int i = 0, j = 0; i < len; ++i, ++j){
+        if(j == keyLen)
+            j = 0;
+ 
+        newKey[i] = key[j];
+    }
+ 
+    newKey[i] = '\0';
+ 
+    //Encriptarea
+    for(int i = 0; i < len; ++i)
+        enMsg[i] = ((msg[i] + newKey[i]) % 26) + 'A';
+ 
+    enMsg[i] = '\0';
+ 
+    //Decriptarea
+    for(int i = 0; i < len; ++i)
+        deMsg[i] = (((enMsg[i] - newKey[i]) + 26) % 26) + 'A';
+ 
+    deMsg[i] = '\0';
+ 
+    printf("\nNew Generated Key: %s", newKey);
+    printf("\nEncrypted Message: %s", enMsg);
+    printf("\nDecrypted Message: %s", deMsg);
+ 
+    return 0;
+}
