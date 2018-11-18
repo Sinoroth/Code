@@ -1,242 +1,110 @@
-#include<stdio.h>
-#include<string.h>
-#include<ctype.h>
-
-int removerepeated(int size,int a[]);
-int insertelementat(int position,int a[],int size);
-
-
-void main()
+#include <iostream>
+#include <string>
+ 
+using namespace std;
+ 
+class playfair
 {
- int i,j,k,numstr[100],numcipher[100],numkey[100],lenkey,templen,tempkey[100],flag=-1,size,cipherkey[5][5],lennumstr,row1,row2,col1,col2;
- char str[100],key[100];
- printf("Enter your message\n");
- gets(str);
- 
- i = j = 0;
- int stringLength = strlen(str);
- while(i<stringLength){
-      if(str[i]!=' ')
-        {
-        str[j]=toupper(str[i]);   
-        j++;
-        }
- }stringLength
- 
- str[j]='\0';
- printf("Your message has been received as %s\n",str);
-
- size=stringLength;
- for(i=0;i<size;i++)
- {
-  if(str[i]!=' ')
-  numstr[i]=str[i]-'A';
- }
- lennumstr=i;
-
- printf("Enter the key (Non repeated elements if possible)\n");
- gets(key);
-
- for(i=0,j=0;i<strlen(key);i++)
- {
-  if(key[i]!=' ')
-  {
-   key[j]=toupper(key[i]);   
-   j++;
-  }
- }
- key[j]='\0';
- printf("%s\n",key);
- 
- int keyLength = strlen(key);
-
- k=0;
- for(i=0;i<keyLength+26;i++)
- {
-  if(i<keyLength)
-  {
-   if(key[i]=='J')
-   {
-    flag=8;
-    printf("%d",flag);
-   }
-       numkey[i]=key[i]-'A';   
-  }
-  else
-  {
-    if(k!=9 && k!=flag)
+public:
+    void doIt( string k, string t, bool ij, bool e )
     {
-            numkey[i]=k; 
-      }
-      k++;
-
-  }
- }
- templen=i;
- lenkey=removerepeated(templen,numkey);
- printf("Entered key converted according to Play Fair Cipher rule\n");
- for(i=0;i<lenkey;i++)
- {
-     printf("%c",numkey[i]+'A');  
- }
- printf("\n");
- k=0;
- for(i=0;i<5;i++)
- {
-  for(j=0;j<5;j++)
-  {
-   cipherkey[i][j]=numkey[k];   
-   k++;
-  }
- }
- 
- printf("Arranged key\n");
- for(i=0;i<5;i++)
- {
-  for(j=0;j<5;j++)
-  {
-
-   printf("%c ",cipherkey[i][j]+'A');
-
-  }
-  printf("\n");
- }
-   
- 
-   for(i=0;i<lennumstr;i+=2)
-   {
-      if(numstr[i]==numstr[i+1])
-      {
-       insertelementat(i+1,numstr,lennumstr);
-       lennumstr++;
-      }
-   }
-   if(lennumstr%2!=0)
-   {
-    insertelementat(lennumstr,numstr,lennumstr);
-    lennumstr++;
-   }
-   printf("Entered String/Message After Processing according to Play fair cipher rule\n");
-   for(i=0;i<lennumstr;i++)
-   {
-    printf("%c",numstr[i]+'A');
-   }
-   for(k=0;k<lennumstr;k+=2)
-   {
-    for(i=0;i<5;i++)
-    {
-     for(j=0;j<5;j++)
-     {
-      if(numstr[k]==cipherkey[i][j])
-      {
-         row1=i;
-         col1=j;       
-      }
-      if(numstr[k+1]==cipherkey[i][j])
-      {
-         row2=i;
-         col2=j;       
-      }
-      
-     }
+	createGrid( k, ij ); getTextReady( t, ij, e );
+	if( e ) doIt( 1 ); else doIt( -1 );
+	display();
     }
-    
-    
-    if(row1==row2)
-    {
-     col1=(col1-1)%5;
-     col2=(col2-1)%5;
-     if(col1<0)
-     {
-      col1=5+col1;
-     }
-     if(col2<0)
-     {
-      col2=5+col2;
-     }
-     numcipher[k]=cipherkey[row1][col1];
-     numcipher[k+1]=cipherkey[row2][col2];
-    }
-    if(col1==col2)
-    {
-     row1=(row1-1)%5;
-     row2=(row2-1)%5;
-      if(row1<0)
-     {
-      row1=5+row1;
-     }
-     if(row2<0)
-     {
-      row2=5+row2;
-     }
-     numcipher[k]=cipherkey[row1][col1];
-     numcipher[k+1]=cipherkey[row2][col2];
-    }
-    if(row1!=row2&&col1!=col2)
-    {
-     numcipher[k]=cipherkey[row1][col2];
-     numcipher[k+1]=cipherkey[row2][col1];
-    }
-   } 
-   printf("\nCipher Text is\n");
-
-   for(i=0;i<lennumstr;i++)
-   {
-    if((numcipher[i]+'A')!='X')
-      printf("%c",numcipher[i]+'A'); 
-   }
-   printf("\n");
-
  
-}
-
-int removerepeated(int size,int a[])
+private:
+    void doIt( int dir )
+    {
+	int a, b, c, d; string ntxt;
+	for( string::const_iterator ti = _txt.begin(); ti != _txt.end(); ti++ )
+	{
+	    if( getCharPos( *ti++, a, b ) )
+		if( getCharPos( *ti, c, d ) )
+		{
+		    if( a == c )     { ntxt += getChar( a, b + dir ); ntxt += getChar( c, d + dir ); }
+		    else if( b == d ){ ntxt += getChar( a + dir, b ); ntxt += getChar( c + dir, d ); }
+		    else             { ntxt += getChar( c, b ); ntxt += getChar( a, d ); }
+		}
+	}
+	_txt = ntxt;
+    }
+ 
+    void display()
+    {
+	cout << "\n\n OUTPUT:\n=========" << endl;
+	string::iterator si = _txt.begin(); int cnt = 0;
+	while( si != _txt.end() )
+	{
+	    cout << *si; si++; cout << *si << " "; si++;
+	    if( ++cnt >= 26 ) cout << endl, cnt = 0;
+	}
+	cout << endl << endl;
+    }
+ 
+    char getChar( int a, int b )
+    {
+	return _m[ (b + 5) % 5 ][ (a + 5) % 5 ];
+    }
+ 
+    bool getCharPos( char l, int &a, int &b )
+    {
+	for( int y = 0; y < 5; y++ )
+	    for( int x = 0; x < 5; x++ )
+		if( _m[y][x] == l )
+		{ a = x; b = y; return true; }
+ 
+	return false;
+    }
+ 
+    void getTextReady( string t, bool ij, bool e )
+    {
+	for( string::iterator si = t.begin(); si != t.end(); si++ )
+	{
+	    *si = toupper( *si ); if( *si < 65 || *si > 90 ) continue;
+	    if( *si == 'J' && ij ) *si = 'I';
+	    else if( *si == 'Q' && !ij ) continue;
+	    _txt += *si;
+	}
+	if( e )
+	{
+	    string ntxt = ""; size_t len = _txt.length();
+	    for( size_t x = 0; x < len; x += 2 )
+	    {
+		ntxt += _txt[x];
+		if( x + 1 < len )
+		{
+		    if( _txt[x] == _txt[x + 1] ) ntxt += 'X';
+		    ntxt += _txt[x + 1];
+		}
+	    }
+	    _txt = ntxt;
+	}
+	if( _txt.length() & 1 ) _txt += 'X';
+    }
+ 
+    void createGrid( string k, bool ij )
+    {
+	if( k.length() < 1 ) k = "KEYWORD"; 
+	k += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; string nk = "";
+	for( string::iterator si = k.begin(); si != k.end(); si++ )
+	{
+	    *si = toupper( *si ); if( *si < 65 || *si > 90 ) continue;
+	    if( ( *si == 'J' && ij ) || ( *si == 'Q' && !ij ) )continue;
+	    if( nk.find( *si ) == -1 ) nk += *si;
+	}
+	copy( nk.begin(), nk.end(), &_m[0][0] );
+    }
+ 
+    string _txt; char _m[5][5];
+};
+ 
+int main( int argc, char* argv[] )
 {
- int i,j,k;
- for(i=0;i<size;i++)
-  {
- for(j=i+1;j<size;)
- {
-    if(a[i]==a[j])
-    {
-     
-     for(k=j;k<size;k++)
-     {
-      a[k]=a[k+1];
-     }
-         size--;
-        }
-    else
-    {
-      j++;
-     } 
- }
- }
-return(size);
-}
-
-int insertelementat(int position,int a[],int size)
-{
-       int i,insitem=23,temp[size+1];
-    for(i=0;i<=size;i++)
-        {
-        if(i<position)
-        {
-            temp[i]=a[i];
-        }
-        if(i>position)
-        {
-         temp[i]=a[i-1];    
-        }
-        if(i==position)
-        {
-            temp[i]=insitem;
-        }
-        
-        }
-        
-        for(i=0;i<=size;i++)
-        {
-         a[i]=temp[i];
-        }
+    string key, i, txt; bool ij, e;
+    cout << "(E)ncode or (D)ecode? "; getline( cin, i ); e = ( i[0] == 'e' || i[0] == 'E' );
+    cout << "Enter a en/decryption key: "; getline( cin, key ); 
+    cout << "I <-> J (Y/N): "; getline( cin, i ); ij = ( i[0] == 'y' || i[0] == 'Y' );
+    cout << "Enter the text: "; getline( cin, txt ); 
+    playfair pf; pf.doIt( key, txt, ij, e ); return system( "pause" );
 }
